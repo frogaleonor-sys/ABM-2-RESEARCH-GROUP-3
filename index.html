@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>The Grand Archive</title>
+    <!-- Load A-Frame for 3D graphics -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <style>
+        /* Antique Paper Book Reader UI */
+        .book-reader-ui {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%; max-width: 380px;
+            background: #f4ecd8; /* Antique paper color */
+            color: #2b1d0c;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            border-radius: 4px;
+            border: 2px solid #d2b48c;
+            border-left: 15px solid #5c2c16; /* Leather spine effect */
+            font-family: 'Georgia', serif;
+            z-index: 9999;
+            box-sizing: border-box;
+        }
+        .book-reader-ui h2 { 
+            margin-top: 0; 
+            color: #4a2311; 
+            font-size: 22px; 
+            border-bottom: 1px dashed #b59975;
+            padding-bottom: 8px;
+        }
+        .page-content { 
+            min-height: 140px; 
+            line-height: 1.6; 
+            font-size: 16px; 
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+        .ui-controls { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 25px; 
+        }
+        .ui-btn {
+            background: #5c2c16; 
+            color: #f4ecd8; 
+            border: none;
+            padding: 10px 18px; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-weight: bold;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .ui-btn:active { background: #3d1d0e; }
+        .close-btn { background: #8a2525; }
+        .close-btn:active { background: #5e1919; }
+        
+        /* Mobile Help Overlay */
+        .mobile-tip {
+            position: fixed;
+            top: 15px; left: 50%;
+            transform: translateX(-50%);
+            color: #f4ecd8;
+            background: rgba(43, 29, 12, 0.85);
+            padding: 8px 18px;
+            font-family: sans-serif;
+            font-size: 13px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 999;
+            border-radius: 20px;
+            border: 1px solid #d2b48c;
+            width: 80%;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 2D Book Reader Overlay UI -->
+    <div id="readerUI" class="book-reader-ui">
+        <h2 id="bookTitle">Book Title</h2>
+        <div id="bookPages" class="page-content">Loading...</div>
+        <div class="ui-controls">
+            <button class="ui-btn" onclick="prevPage()">◀ Prev</button>
+            <span id="pageNumber" style="align-self: center; font-weight: bold; font-size: 14px;">1/3</span>
+            <button class="ui-btn" onclick="nextPage()">Next ▶</button>
+            <button class="ui-btn close-btn" onclick="closeBook()">Close</button>
+        </div>
+    </div>
+
+    <div class="mobile-tip">📱 Drag to look around room.<br>Tap directly on a book to read it.</div>
+
+    <!-- 3D Scene Container (Optimized for Mobile Tapping) -->
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+        
+        <!-- Warm Cozy Ambient Room Background -->
+        <a-sky color="#1a1005"></a-sky>
+
+        <!-- Fixed Camera View (Prevents messy mobile walking controls) -->
+        <a-camera look-controls="magicWindowTrackingEnabled: false" wasd-controls-enabled="false" position="0 1.6 0">
+        </a-camera>
+
+        <!-- Warm Candle/Lantern Lighting -->
+        <a-entity light="type: ambient; color: #5e4c3e; intensity: 1.8"></a-entity>
+        <a-entity light="type: point; color: #ffaa44; intensity: 1.2" position="0 2.5 0"></a-entity>
+
+        <!-- ================= MAIN FRONT BOOKSHELF ================= -->
+        <a-entity position="0 0 -2.5">
+            <!-- Wooden Shelf Structure -->
+            <a-box position="0 1.4 0" width="3.2" height="2.2" depth="0.4" color="#4a2e1b" material="roughness: 0.9"></a-box>
+            <!-- Middle Shelf Dividers -->
+            <a-box position="0 0.9 0.02" width="3.1" height="0.06" depth="0.38" color="#362113"></a-box>
+            <a-box position="0 1.6 0.02" width="3.1" height="0.06" depth="0.38" color="#362113"></a-box>
+
+            <!-- Book 1 (Left Side) -->
+            <a-box class="clickable" onclick="openBook('volume1')"
+                   position="-0.8 1.25 0.15" width="0.14" height="0.55" depth="0.32" color="#7a2b2b"
+                   animation__click="property: scale; startEvents: click; from: 1 1 1; to: 1.1 1.1 1.1; dur: 150; dir: alternate">
+            </a-box>
+            
+            <!-- Book 2 (Center Side) -->
+            <a-box class="clickable" onclick="openBook('volume2')"
+                   position="0 1.25 0.15" width="0.16" height="0.58" depth="0.32" color="#2b4739"
+                   animation__click="property: scale; startEvents: click; from: 1 1 1; to: 1.1 1.1 1.1; dur: 150; dir: alternate">
+            </a-box>
+            
+            <!-- Book 3 (Right Side) -->
+            <a-box class="clickable" onclick="openBook('volume3')"
+                   position="0.8 1.25 0.15" width="0.13" height="0.52" depth="0.32" color="#8c6c3d"
+                   animation__click="property: scale; startEvents: click; from: 1 1 1; to: 1.1 1.1 1.1; dur: 150; dir: alternate">
+            </a-box>
+        </a-entity>
+
+        <!-- ================= DECORATIVE SIDE WALL DETAILS ================= -->
+        <!-- Left Wooden Panel -->
+        <a-box position="-3.5 1.5 -1" rotation="0 90 0" width="4" height="3" depth="0.1" color="#3d2516"></a-box>
+        <!-- Right Wooden Panel -->
+        <a-box position="3.5 1.5 -1" rotation="0 -90 0" width="4" height="3" depth="0.1" color="#3d2516"></a-box>
+
+    </a-scene>
+
+    <!-- ================= LIBRARY DATA AND ENGINE ================= -->
+    <script>
+        // Edit the book texts easily right here!
+        const libraryDatabase = {
+            volume1: {
+                title: "📜 Chapter I: The Lost Chronicles",
+                pages: [
+                    "Page 1:\n\nYou pull the dusty crimson volume from the dark oak shelf. The pages crackle as you open them.",
+                    "Page 2:\n\nThe first entry details an old account written long ago. You can change this text to hold your stories later.",
+                    "Page 3:\n\n[End of Document]\n\nFeel free to write as many pages as you like inside the code arrays!"
+                ]
+            },
+            volume2: {
+                title: "📜 Chapter II: Observations",
+                pages: [
+                    "Page 1:\n\nThis green leather-bound diary appears to belong to a former archivist.",
+                    "Page 2:\n\n'Day 42: The library remains perfectly quiet. Visitors often stop to read the center volumes.'"
+                ]
+            },
+            volume3: {
+                title: "📜 Chapter III: Faded Remnants",
+                pages: [
+                    "Page 1:\n\nA small worn book with gold trim. Most of its text has worn away with time.",
+                    "Page 2:\n\nOnly a final sentence remains legible:\n\n\"Thank you for exploring the archive.\""
+                ]
+            }
+        };
+
+        let currentBookKey = '';
+        let currentPageIndex = 0;
+
+        function openBook(bookKey) {
+            currentBookKey = bookKey;
+            currentPageIndex = 0;
+            updateReaderUI();
+            document.getElementById('readerUI').style.display = 'block';
+        }
+
+        function updateReaderUI() {
+            const book = libraryDatabase[currentBookKey];
+            document.getElementById('bookTitle').innerText = book.title;
+            document.getElementById('bookPages').innerText = book.pages[currentPageIndex];
+            document.getElementById('pageNumber').innerText = `${currentPageIndex + 1} / ${book.pages.length}`;
+        }
+
+        function nextPage() {
+            const book = libraryDatabase[currentBookKey];
+            if (currentPageIndex < book.pages.length - 1) {
+                currentPageIndex++;
+                updateReaderUI();
+            }
+        }
+
+        function prevPage() {
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                updateReaderUI();
+            }
+        }
+
+        function closeBook() {
+            document.getElementById('readerUI').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
