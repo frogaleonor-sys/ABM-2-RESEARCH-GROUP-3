@@ -2,15 +2,20 @@
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     background: #120a04;
-    font-family: Georgia, serif;
+    font-family: Georgia, "Times New Roman", serif;
 }
 
 
 /* =========================================
-   BOOK READER
+   READER OVERLAY
 ========================================= */
 
 .book-reader-ui {
@@ -25,7 +30,7 @@ body {
     transform: translate(-50%, -50%);
 
     width: 92%;
-    max-width: 620px;
+    max-width: 680px;
 
     max-height: 88vh;
 
@@ -33,22 +38,20 @@ body {
         linear-gradient(
             to right,
             #4a2e1b 0px,
-            #4a2e1b 20px,
-            #fdfbf7 20px,
+            #4a2e1b 22px,
+            #fdfbf7 22px,
             #fdfbf7 100%
         );
 
     color: #2b1d0c;
 
-    padding: 30px 32px 28px 45px;
+    border: 1px solid #c9aa7a;
 
-    border: 1px solid #d2b48c;
-
-    border-radius: 7px;
+    border-radius: 8px;
 
     box-shadow:
         0 25px 80px rgba(0, 0, 0, 0.9),
-        inset 0 0 30px rgba(100, 70, 30, 0.08);
+        0 0 0 5px rgba(70, 40, 20, 0.3);
 
     z-index: 9999;
 
@@ -57,20 +60,42 @@ body {
 
 
 /* =========================================
-   READER TITLE
+   FAKE BOOK SPINE
 ========================================= */
 
-.book-reader-ui h2 {
+.book-spine {
 
-    margin: 0;
+    position: absolute;
 
-    color: #4a2311;
+    left: 7px;
+    top: 0;
+    bottom: 0;
 
-    font-size: 23px;
+    width: 8px;
+
+    background:
+        linear-gradient(
+            to right,
+            #28150b,
+            #70472b,
+            #321a0d
+        );
+}
+
+
+/* =========================================
+   READER CONTENT
+========================================= */
+
+.reader-inner {
+
+    padding: 27px 32px 25px 48px;
+}
+
+
+.reader-header {
 
     text-align: center;
-
-    line-height: 1.3;
 
     border-bottom: 2px solid #b59975;
 
@@ -78,8 +103,34 @@ body {
 }
 
 
+.small-label {
+
+    font-family: Arial, sans-serif;
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    color: #967957;
+
+    margin-bottom: 7px;
+}
+
+
+.book-reader-ui h2 {
+
+    margin: 0;
+
+    color: #4a2311;
+
+    font-size: 24px;
+
+    line-height: 1.3;
+}
+
+
 /* =========================================
-   RESEARCH PAGE
+   PAGE
 ========================================= */
 
 .page-content {
@@ -88,11 +139,11 @@ body {
 
     min-height: 300px;
 
-    max-height: 52vh;
+    max-height: 51vh;
 
     overflow-y: auto;
 
-    padding: 5px 12px 10px 3px;
+    padding: 5px 12px 12px 3px;
 
     font-size: 15px;
 
@@ -105,23 +156,27 @@ body {
 
 
 .page-content::-webkit-scrollbar {
+
     width: 7px;
 }
 
 
 .page-content::-webkit-scrollbar-track {
+
     background: #eee4d4;
 }
 
 
 .page-content::-webkit-scrollbar-thumb {
+
     background: #8b6b4a;
+
     border-radius: 10px;
 }
 
 
 /* =========================================
-   BUTTONS
+   CONTROLS
 ========================================= */
 
 .ui-controls {
@@ -134,7 +189,7 @@ body {
 
     gap: 8px;
 
-    margin-top: 20px;
+    margin-top: 18px;
 
     flex-wrap: wrap;
 }
@@ -160,7 +215,9 @@ body {
 
     border-radius: 4px;
 
-    transition: 0.2s ease;
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
 }
 
 
@@ -172,25 +229,35 @@ body {
 }
 
 
+.ui-btn:active {
+
+    transform: translateY(0);
+}
+
+
 .close-btn {
+
     background: #8a2525;
 }
 
 
 .close-btn:hover {
+
     background: #b33333;
 }
 
 
 #pageNumber {
 
-    min-width: 60px;
+    min-width: 65px;
 
     text-align: center;
 
     font-weight: bold;
 
     font-size: 14px;
+
+    color: #4a2e1b;
 }
 
 
@@ -224,11 +291,14 @@ body {
 
     border: 1px solid #d2b48c;
 
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.5);
 
     z-index: 999;
 
     white-space: nowrap;
+
+    pointer-events: none;
 }
 
 
@@ -238,11 +308,21 @@ body {
 
 @media (max-width: 600px) {
 
-    .book-reader-ui {
+    .mobile-tip {
 
-        width: 94%;
+        max-width: 90%;
 
-        padding: 25px 20px 22px 35px;
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        font-size: 11px;
+    }
+
+
+    .reader-inner {
+
+        padding: 22px 18px 20px 38px;
     }
 
 
@@ -262,15 +342,11 @@ body {
     }
 
 
-    .mobile-tip {
+    .ui-btn {
 
-        font-size: 11px;
+        padding: 9px 11px;
 
-        max-width: 90%;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
+        font-size: 12px;
     }
 
 }
